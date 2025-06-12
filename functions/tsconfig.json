@@ -3,10 +3,10 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": true,
-    "outDir": "lib"
+    "declaration": false,
+    "outDir": "lib",
+    "sourceMap": true
   },
-  "compileOnSave": true,
   "include": [
     "src"
   ]

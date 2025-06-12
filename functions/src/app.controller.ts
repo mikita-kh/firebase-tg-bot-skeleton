@@ -1,18 +1,16 @@
-import { Controller, Post, Req, Res } from '@nestjs/common';
-import { InjectBot } from 'nestjs-telegraf';
-import { Telegraf, Context } from 'telegraf';
-import { Response, Request } from 'express';
+import type { Response } from 'express'
+import type { Update } from 'telegraf/types'
+import type { AppService } from './app.service'
 
-// register endpoints 
+import { Body, Controller, Post, Res } from '@nestjs/common'
+
+// register endpoints
 @Controller()
 export class AppController {
-  constructor(
-    @InjectBot()
-    private readonly bot: Telegraf<Context>,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
-  @Post("updates")
-  async create(@Req() req: Request, @Res() res: Response) {
-    return this.bot.handleUpdate(req.body, res);
+  @Post('updates')
+  async create(@Body() body: Update, @Res() res: Response) {
+    return this.appService.handleUpdate(body, res)
   }
 }

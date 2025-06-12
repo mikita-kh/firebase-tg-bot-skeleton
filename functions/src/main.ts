@@ -1,20 +1,24 @@
-import {NestFactory} from '@nestjs/core';
-import once from 'lodash.once';
-import {ExpressAdapter, NestExpressApplication} from '@nestjs/platform-express';
-import express, { Express } from 'express';
-import {AppModule} from './app.module';
-// import * as logger from "firebase-functions/logger";
+import type { NestExpressApplication } from '@nestjs/platform-express'
+import type { Express } from 'express'
+import { NestFactory } from '@nestjs/core'
+import { ExpressAdapter } from '@nestjs/platform-express'
+import { debug, error, info, warn } from 'firebase-functions/logger'
+import once from 'lodash.once'
 
+import { AppModule } from './app.module'
 
-export const bootstrap =  once(async function bootstrap(server: Express) {
-    await NestFactory.createApplicationContext(AppModule);
+export const bootstrap = once(async (server: Express) => {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, new ExpressAdapter(server), {
+    cors: true,
+    logger: {
+      log: info,
+      warn,
+      error,
+      debug,
+    },
+  })
 
-    const adapter = new ExpressAdapter(server);
-    const app = await NestFactory.create<NestExpressApplication>(
-        AppModule, adapter, { cors: true },
-    );
+  await app.init()
 
-    // app.useLogger(logger)
-
-    await app.init()
+  return app
 })
