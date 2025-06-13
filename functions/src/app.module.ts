@@ -1,15 +1,16 @@
 import process from 'node:process'
-import { FirestoreModule } from '@cristobalgvera/nestjs-firestore'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { credential } from 'firebase-admin'
+import { FireormModule } from 'nestjs-fireorm'
 import { TelegrafModule } from 'nestjs-telegraf'
 import { session } from 'telegraf'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { SessionsModule } from './sessions/sessions.module'
-import { SessionsService } from './sessions/sessions.service'
+import { GreatingModule } from './greating/greating.module'
+import { SessionsModule } from './session/session.module'
+import { SessionsService } from './session/session.service'
 
 @Module({
   controllers: [AppController],
@@ -18,12 +19,12 @@ import { SessionsService } from './sessions/sessions.service'
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    FirestoreModule.forRootAsync({
-      useFactory: () => ({
+    FireormModule.forRoot({
+      firestoreSettings: {
         projectId: process.env.GCLOUD_PROJECT,
         databaseId: '(default)',
         credential: credential.applicationDefault(),
-      }),
+      },
     }),
     TelegrafModule.forRootAsync({
       imports: [ConfigModule, SessionsModule],
@@ -43,6 +44,7 @@ import { SessionsService } from './sessions/sessions.service'
       inject: [ConfigService, SessionsService],
     }),
     SessionsModule,
+    GreatingModule,
   ],
 })
 export class AppModule {}
